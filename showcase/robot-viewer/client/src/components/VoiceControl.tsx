@@ -57,24 +57,24 @@ export default function VoiceControl() {
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
       {apiStatus?.demoMode && (
-        <div className="bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 text-xs px-3 py-1.5 rounded-lg backdrop-blur-sm">
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs px-3 py-1.5 rounded-lg backdrop-blur-sm">
           Demo Mode — API keys not configured
         </div>
       )}
 
       {(error || micError) && (
-        <div className="bg-red-500/20 border border-red-500/40 text-red-300 text-xs px-3 py-1.5 rounded-lg backdrop-blur-sm max-w-xs text-center">
+        <div className="bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-1.5 rounded-lg backdrop-blur-sm max-w-xs text-center">
           {error || micError}
         </div>
       )}
 
       {lastTranscription && (
-        <div className="bg-slate-800/80 backdrop-blur-sm text-slate-300 text-sm px-4 py-2 rounded-lg border border-slate-700/50 max-w-md text-center">
+        <div className="bg-white/80 backdrop-blur-sm text-gray-600 text-sm px-4 py-2 rounded-lg border border-gray-200 max-w-md text-center">
           "{lastTranscription}"
         </div>
       )}
 
-      <div className="bg-slate-800/90 backdrop-blur-md rounded-2xl border border-slate-700/50 p-4 flex flex-col items-center gap-3 shadow-2xl">
+      <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-gray-200 p-4 flex flex-col items-center gap-3 shadow-2xl">
         {/* Mic button */}
         <button
           onClick={handleMicClick}
@@ -83,7 +83,7 @@ export default function VoiceControl() {
             isRecording
               ? 'bg-red-500 animate-pulse shadow-lg shadow-red-500/40'
               : isLoading
-              ? 'bg-slate-600 cursor-wait'
+              ? 'bg-gray-300 cursor-wait'
               : 'bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/30'
           } disabled:opacity-40 disabled:cursor-not-allowed`}
         >
@@ -100,7 +100,7 @@ export default function VoiceControl() {
           )}
         </button>
 
-        <div className="text-slate-500 text-xs">or type</div>
+        <div className="text-gray-400 text-xs">or type</div>
 
         {/* Text input */}
         <form onSubmit={handleTextSubmit} className="flex gap-2">
@@ -110,7 +110,7 @@ export default function VoiceControl() {
             onChange={(e) => setTextQuery(e.target.value)}
             placeholder="Ask about a robot part..."
             disabled={isLoading}
-            className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50 w-56 disabled:opacity-50"
+            className="bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-400 w-56 disabled:opacity-50"
           />
           <button
             type="submit"

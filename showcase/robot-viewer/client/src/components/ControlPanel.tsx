@@ -14,12 +14,12 @@ const categories: { label: string; value: PartCategory | 'all' }[] = [
 ];
 
 const catBadgeColors: Record<PartCategory, string> = {
-  motion: 'bg-orange-500/30 text-orange-300',
-  sensors: 'bg-purple-500/30 text-purple-300',
-  power: 'bg-red-500/30 text-red-300',
-  control: 'bg-blue-500/30 text-blue-300',
-  structure: 'bg-slate-500/30 text-slate-300',
-  communication: 'bg-teal-500/30 text-teal-300',
+  motion: 'bg-orange-100 text-orange-700',
+  sensors: 'bg-purple-100 text-purple-700',
+  power: 'bg-red-100 text-red-700',
+  control: 'bg-blue-100 text-blue-700',
+  structure: 'bg-gray-200 text-gray-700',
+  communication: 'bg-teal-100 text-teal-700',
 };
 
 export default function ControlPanel() {
@@ -52,26 +52,26 @@ export default function ControlPanel() {
     <div className="fixed top-4 left-4 z-20">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-slate-800/90 backdrop-blur-md text-white px-3 py-2 rounded-lg border border-slate-700/50 text-sm font-medium hover:bg-slate-700/90 transition-colors shadow-lg mb-2"
+        className="bg-white/90 backdrop-blur-md text-gray-700 px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors shadow-lg mb-2"
       >
         {isOpen ? 'Hide Parts' : 'Show Parts'}
       </button>
 
       {isOpen && (
-        <div className="bg-slate-800/90 backdrop-blur-md rounded-xl border border-slate-700/50 shadow-2xl w-64 overflow-hidden">
+        <div className="bg-white/90 backdrop-blur-md rounded-xl border border-gray-200 shadow-2xl w-64 overflow-hidden">
           {/* Search */}
-          <div className="p-3 border-b border-slate-700/50">
+          <div className="p-3 border-b border-gray-200">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search parts..."
-              className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-1.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50"
+              className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-400"
             />
           </div>
 
           {/* Category filters */}
-          <div className="px-3 py-2 flex flex-wrap gap-1 border-b border-slate-700/50">
+          <div className="px-3 py-2 flex flex-wrap gap-1 border-b border-gray-200">
             {categories.map((cat) => (
               <button
                 key={cat.value}
@@ -79,7 +79,7 @@ export default function ControlPanel() {
                 className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
                   activeCategory === cat.value
                     ? 'bg-blue-600 text-white'
-                    : 'bg-slate-700/50 text-slate-400 hover:text-white'
+                    : 'bg-gray-100 text-gray-500 hover:text-gray-800'
                 }`}
               >
                 {cat.label}
@@ -98,14 +98,14 @@ export default function ControlPanel() {
                     highlightParts([part.id]);
                     selectPart(part.id);
                   }}
-                  className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-slate-700/40 transition-colors border-b border-slate-700/20 ${
-                    isActive ? 'bg-yellow-500/10' : ''
+                  className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-gray-100 transition-colors border-b border-gray-100 ${
+                    isActive ? 'bg-yellow-50' : ''
                   }`}
                 >
                   <span className={`text-[10px] px-1.5 py-0.5 rounded ${catBadgeColors[part.category]}`}>
                     {part.category}
                   </span>
-                  <span className={`text-sm ${isActive ? 'text-yellow-300' : 'text-white'}`}>
+                  <span className={`text-sm ${isActive ? 'text-yellow-600 font-medium' : 'text-gray-700'}`}>
                     {part.name}
                   </span>
                 </button>
@@ -115,10 +115,10 @@ export default function ControlPanel() {
 
           {/* Clear */}
           {highlightedParts.length > 0 && (
-            <div className="p-2 border-t border-slate-700/50">
+            <div className="p-2 border-t border-gray-200">
               <button
                 onClick={clearHighlights}
-                className="w-full text-xs text-slate-400 hover:text-white py-1 transition-colors"
+                className="w-full text-xs text-gray-400 hover:text-gray-700 py-1 transition-colors"
               >
                 Clear Selection
               </button>
