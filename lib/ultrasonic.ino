@@ -4,9 +4,9 @@
 */
 
 // GPIO pin configuration
-const int TRIGGER_PIN = 24;  // GPIO pin for trigger (output)
-const int ECHO_PIN = 23;     // GPIO pin for echo (input)
-const float THRESHOLD_CM = 30.0;  // Distance threshold in centimeters
+const int TRIGGER_PIN = 11;  // GPIO pin for trigger (output)
+const int ECHO_PIN = 12;     // GPIO pin for echo (input)
+const float THRESHOLD_CM = 2.0;  // Distance threshold in centimeters
 
 void notifyTooClose(float distance) {
   /*Notify when object is too close*/
@@ -24,9 +24,9 @@ void notifyTooClose(float distance) {
 
 void setup() {
   /*Initialize pins and serial communication*/
-  Serial.begin(9600);
   pinMode(TRIGGER_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
+  Serial.begin(9600);
 }
 
 float getDistance() {
@@ -52,6 +52,7 @@ float getDistance() {
 void loop() {
   /*Main loop*/
   float distance_cm = getDistance();
+  Serial.println(distance_cm);
   
   if (distance_cm > 0 && distance_cm < 400) {  // Valid measurement (0.5cm to 4m)
     Serial.print("Distance: ");
