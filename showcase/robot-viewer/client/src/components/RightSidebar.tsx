@@ -5,7 +5,6 @@ import { getAvailableSounds } from '../services/api';
 type TourStepPart = {
   id: string;
   role: string;
-  funFact?: string;
 };
 
 type TourStep = {
@@ -19,52 +18,52 @@ const TOUR_STEPS: TourStep[] = [
     title: 'Wheels',
     summary: 'The front and rear wheels provide locomotion. We tested every tire we had and tuned the drive for the red and green tracks.',
     parts: [
-      { id: 'wheel-1', role: 'Front/right wheel. Primary motion component for robot movement.', funFact: 'As a team we together broke like 25 axles.' },
-      { id: 'wheel-2', role: 'Rear/left wheel. Works with wheel-1 for stable driving and turns.', funFact: 'We had every tire lined up and tested and finally chose the first one we got.' },
+      { id: 'wheel-1', role: 'Front/right wheel. Primary motion component for robot movement.' },
+      { id: 'wheel-2', role: 'Rear/left wheel. Works with wheel-1 for stable driving and turns.' },
     ],
   },
   {
     title: 'Base Plate',
     summary: 'The laser-cut base plate is the structural foundation. Everything mounts to it: wheels, Arduino, sensors, and power.',
     parts: [
-      { id: 'plate-1', role: 'Base plate. Supports all components and keeps the chassis rigid.', funFact: 'None of the laser cut holes fit what we wanted </3' },
+      { id: 'plate-1', role: 'Base plate. Supports all components and keeps the chassis rigid.' },
     ],
   },
   {
     title: 'IR Sensors',
     summary: 'Infrared proximity sensors detect obstacles and line edges. We use them for obstacle avoidance on the red track and line following.',
     parts: [
-      { id: 'sensor-1', role: 'Left IR sensor. Detects obstacles and reflectance for line following.', funFact: 'We spent way too long debugging which way was "obstacle" vs "clear".' },
-      { id: 'sensor-2', role: 'Right IR sensor. Paired with sensor-1 for symmetric detection.', funFact: 'Calibrating these in the gym lighting was a whole adventure.' },
+      { id: 'sensor-1', role: 'Left IR sensor. Detects obstacles and reflectance for line following.' },
+      { id: 'sensor-2', role: 'Right IR sensor. Paired with sensor-1 for symmetric detection.' },
     ],
   },
   {
     title: 'Arduino Brain',
     summary: 'The Arduino Uno runs all our code: line following, obstacle avoidance, bullseye centering, and shooting logic.',
     parts: [
-      { id: 'arduino-1', role: 'Main microcontroller. Reads sensors, drives motors, and runs the challenge algorithms.', funFact: 'We reuploaded code at the reupload points so many times we lost count.' },
+      { id: 'arduino-1', role: 'Main microcontroller. Reads sensors, drives motors, and runs the challenge algorithms.' },
     ],
   },
   {
     title: 'Motor Driver',
     summary: 'The L298N motor driver takes low-power signals from the Arduino and drives the wheel motors at the right speed and direction.',
     parts: [
-      { id: 'motor-driver-1', role: 'H-bridge motor driver. Controls speed and direction of both wheels.', funFact: 'Getting both wheels to actually go the same speed took a lot of trial and error.' },
+      { id: 'motor-driver-1', role: 'H-bridge motor driver. Controls speed and direction of both wheels.' },
     ],
   },
   {
     title: 'Breadboard',
     summary: 'The breadboard lets us wire sensors and logic without soldering. Easy to change during testing.',
     parts: [
-      { id: 'breadboard-1', role: 'Solderless prototyping board. Connects Arduino, sensors, and power cleanly.', funFact: 'Half our debugging was "wait, which row is that wire in?"' },
+      { id: 'breadboard-1', role: 'Solderless prototyping board. Connects Arduino, sensors, and power cleanly.' },
     ],
   },
   {
     title: 'Power',
-    summary: 'Two 9V batteries: one for the Arduino and sensors, one for the motors. Keeps logic stable when the motors draw current.',
+    summary: '67, 67 67 67 67 six seven SIX SEVEN',
     parts: [
-      { id: 'battery-1', role: '9V for Arduino and logic. Keeps the brain and sensors running.', funFact: 'We kept a spare in the pit because 9Vs die at the worst times.' },
-      { id: 'battery-2', role: '9V for motors. Dedicated supply so motor spikes do not brown out the Arduino.', funFact: 'Separate battery for motors was a game changer for consistent driving.' },
+      { id: 'battery-1', role: '67, 67 67 67 67 six seven SIX SEVEN' },
+      { id: 'battery-2', role: '67, 67 67 67 67 six seven SIX SEVEN' },
     ],
   },
 ];
@@ -157,7 +156,6 @@ export default function RightSidebar() {
         ...tourPart,
         name: match?.name ?? tourPart.id,
         description: match?.description ?? null,
-        funFact: tourPart.funFact,
       };
     });
   }, [parts, step.parts]);
@@ -483,9 +481,6 @@ export default function RightSidebar() {
                           <div className="text-[9px] text-gray-400">{part.id}</div>
                         </div>
                         <div className="text-[10px] text-gray-500">{part.role}</div>
-                        {part.funFact && (
-                          <div className="text-[9px] text-gray-400 mt-1 italic">Fun fact: {part.funFact}</div>
-                        )}
                       </div>
                     ))}
                   </div>
