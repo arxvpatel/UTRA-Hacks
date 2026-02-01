@@ -91,6 +91,16 @@ Open **http://localhost:5173**. The app runs in demo mode without API keys; add 
 
 ---
 
+## Clean Code
+
+We practice **clean code** and keep the codebase structured and easy to work with:
+
+- **Descriptive and clear comments** — We comment where it helps understanding, not noise.
+- **Clear structure** — Files and folders are organized by purpose; we follow conventions and naming that make sense.
+- **Readable and understandable** — We aim for code that any teammate can follow. If something isn’t clear, we **rename it** (and we ask before renaming, so nothing changes without agreement).
+
+---
+
 ## Tech Stack
 
 - React + Vite + TypeScript

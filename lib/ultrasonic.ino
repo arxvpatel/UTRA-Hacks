@@ -12,15 +12,9 @@ void notifyTooClose(float distance) {
   Serial.print(" cm (Threshold: ");
   Serial.print(THRESHOLD_CM, 2);
   Serial.println(" cm)");
-  // You can add additional notification methods here:
-  // - LED blink
-  // - Buzzer sound
-  // - Send alert message
-  // - etc.
 }
 
 void setup() {
-  /*Initialize pins and serial communication*/
   pinMode(TRIGGER_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   Serial.begin(9600);
@@ -47,7 +41,6 @@ float getDistance() {
 }
 
 void loop() {
-  /*Main loop*/
   float distance_cm = getDistance();
   Serial.println(distance_cm);
   
@@ -65,5 +58,5 @@ void loop() {
     Serial.println("WARNING: Measurement failed or out of range");
   }
   
-  delay(100);  // Wait 100ms between measurements
+  delay(100);
 }
