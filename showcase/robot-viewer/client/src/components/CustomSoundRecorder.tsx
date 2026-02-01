@@ -13,7 +13,7 @@ export default function CustomSoundRecorder() {
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const setSelectedSound = useRobotStore((s) => s.setSelectedSound);
