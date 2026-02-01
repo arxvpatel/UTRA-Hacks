@@ -5,9 +5,8 @@
 */
 
 // GPIO pin configuration - adjust for your wiring
-const int IR_LEFT_PIN = 2;   // Left IR sensor digital out
-const int IR_CENTER_PIN = 3; // Center IR sensor digital out
-const int IR_RIGHT_PIN = 4;  // Right IR sensor digital out
+const int IR_LEFT_PIN = 19;   // Left IR sensor digital out
+const int IR_RIGHT_PIN = 1;  // Right IR sensor digital out
 
 // Set to true if your module logic is inverted (HIGH = obstacle, LOW = clear)
 const bool INVERTED_LOGIC = false;
@@ -20,7 +19,6 @@ void setup() {
   Serial.begin(9600);
 
   pinMode(IR_LEFT_PIN, INPUT);
-  pinMode(IR_CENTER_PIN, INPUT);
   pinMode(IR_RIGHT_PIN, INPUT);
 
   if (IR_ANALOG_PIN >= 0) {
@@ -37,29 +35,16 @@ bool obstacleDetected(int pin) {
 }
 
 // Read all sensors and return as a simple state
-void readIRSensors(bool& left, bool& center, bool& right) {
+void readIRSensors(bool& left, bool& right) {
   left = obstacleDetected(IR_LEFT_PIN);
-  center = obstacleDetected(IR_CENTER_PIN);
   right = obstacleDetected(IR_RIGHT_PIN);
 }
 
-void notifyObstacle(const char* side) {
-  Serial.print("OBSTACLE ");
-  Serial.print(side);
-  Serial.println(" - object detected");
-  // Add LED, buzzer, or motor stop here if needed
-}
-
 void loop() {
-  bool left, center, right;
-  readIRSensors(left, center, right);
+  bool left, right;
+  readIRSensors(left, right);
 
-  Serial.print("IR L:");
-  Serial.print(left ? "1" : "0");
-  Serial.print(" C:");
-  Serial.print(center ? "1" : "0");
-  Serial.print(" R:");
-  Serial.print(right ? "1" : "0");
+
 
   if (IR_ANALOG_PIN >= 0) {
     int analogVal = analogRead(IR_ANALOG_PIN);
@@ -67,10 +52,11 @@ void loop() {
     Serial.print(analogVal);
   }
   Serial.println();
+  
+  Serial.print("IR L:");
+  Serial.print(left ? "white" : "black");
+  Serial.print(" R:");
+  Serial.print(right ? "white" : "black");
 
-  if (left)  notifyObstacle("LEFT");
-  if (center) notifyObstacle("CENTER");
-  if (right) notifyObstacle("RIGHT");
-
-  delay(80);
+  delay(100);
 }
