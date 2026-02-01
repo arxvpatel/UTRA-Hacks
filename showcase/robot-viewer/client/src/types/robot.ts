@@ -32,6 +32,7 @@ export interface RobotState {
   explodeStrength: number;
   showGround: boolean;
   groundY: number;
+  cameraMode: 'third' | 'first';
 }
 
 export interface RobotActions {
@@ -46,4 +47,5 @@ export interface RobotActions {
   setExplodeStrength: (strength: number) => void;
   toggleGround: () => void;
   setGroundY: (y: number) => void;
+  toggleCameraMode: () => void;
 }

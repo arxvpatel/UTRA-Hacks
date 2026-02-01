@@ -90,9 +90,9 @@ export default function ControlPanel() {
             />
           </div>
 
-          {/* Ground toggle */}
+          {/* Drive toggle */}
           <div className="px-3 py-2 border-b border-gray-200 flex items-center justify-between">
-            <label className="text-[10px] text-gray-500 uppercase tracking-wide">Ground</label>
+            <label className="text-[10px] text-gray-500 uppercase tracking-wide">Drive</label>
             <button
               onClick={toggleGround}
               className={`relative w-8 h-4 rounded-full transition-colors ${

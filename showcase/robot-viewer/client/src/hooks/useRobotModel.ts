@@ -12,6 +12,7 @@ export const useRobotStore = create<RobotState & RobotActions>((set) => ({
   explodeStrength: 0.1,
   showGround: false,
   groundY: -0.15,
+  cameraMode: 'third',
 
   highlightParts: (partIds: string[]) => set({ highlightedParts: partIds, error: null }),
   clearHighlights: () => set({ highlightedParts: [], selectedPart: null }),
@@ -24,4 +25,6 @@ export const useRobotStore = create<RobotState & RobotActions>((set) => ({
   setExplodeStrength: (strength: number) => set({ explodeStrength: strength }),
   toggleGround: () => set((state) => ({ showGround: !state.showGround })),
   setGroundY: (y: number) => set({ groundY: y }),
+  toggleCameraMode: () =>
+    set((state) => ({ cameraMode: state.cameraMode === 'third' ? 'first' : 'third' })),
 }));
