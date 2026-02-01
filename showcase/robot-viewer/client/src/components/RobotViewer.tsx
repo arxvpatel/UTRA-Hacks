@@ -15,7 +15,7 @@ const MOVE_DAMPING = 5;
 const MAX_SPEED = 4.2;
 const MAX_REVERSE = 2.6;
 const TURN_RATE = 2.6;
-const BOOST_MULT = 1.6;
+const BOOST_MULT = 3;
 const WHEEL_SPIN_FACTOR = 8;
 const SMOKE_MAX = 160;
 const SMOKE_SPAWN_RATE = 22;
@@ -75,6 +75,7 @@ function LoadedModel() {
     left: false,
     right: false,
     boost: false,
+    brake: false,
   });
   const smokeDataRef = useRef<{
     positions: Float32Array;
@@ -114,7 +115,7 @@ function LoadedModel() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
-        ['w', 'W', 'a', 'A', 's', 'S', 'd', 'D', 'b', 'B', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(
+        ['w', 'W', 'a', 'A', 's', 'S', 'd', 'D', 'b', 'B', 'Shift', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(
           event.key
         )
       ) {
@@ -145,6 +146,9 @@ function LoadedModel() {
         case 'B':
           keysRef.current.boost = true;
           break;
+        case 'Shift':
+          keysRef.current.brake = true;
+          break;
         default:
           break;
       }
@@ -152,7 +156,7 @@ function LoadedModel() {
 
     const handleKeyUp = (event: KeyboardEvent) => {
       if (
-        ['w', 'W', 'a', 'A', 's', 'S', 'd', 'D', 'b', 'B', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(
+        ['w', 'W', 'a', 'A', 's', 'S', 'd', 'D', 'b', 'B', 'Shift', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(
           event.key
         )
       ) {
@@ -183,6 +187,9 @@ function LoadedModel() {
         case 'B':
           keysRef.current.boost = false;
           break;
+        case 'Shift':
+          keysRef.current.brake = false;
+          break;
         default:
           break;
       }
@@ -194,6 +201,7 @@ function LoadedModel() {
       keysRef.current.left = false;
       keysRef.current.right = false;
       keysRef.current.boost = false;
+      keysRef.current.brake = false;
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -357,11 +365,21 @@ function LoadedModel() {
     if (showGround && groupRef.current) {
       const throttle = (keysRef.current.forward ? 1 : 0) - (keysRef.current.back ? 1 : 0);
       const steer = (keysRef.current.left ? 1 : 0) - (keysRef.current.right ? 1 : 0);
+      const brake = keysRef.current.brake;
       const boost = keysRef.current.boost && throttle > 0;
       const maxForward = boost ? MAX_SPEED * BOOST_MULT : MAX_SPEED;
       const accelScale = boost ? BOOST_MULT : 1;
 
-      if (throttle !== 0) {
+      // Brake physics: apply strong deceleration when braking
+      if (brake && Math.abs(speed) > 0.1) {
+        const brakePower = 2; // Strong braking
+        const brakeDecel = Math.sign(speed) * brakePower * delta;
+        speed -= brakeDecel;
+        // Stop completely if speed is very low
+        if (Math.abs(speed) < 0.3) {
+          speed *= 0.85;
+        }
+      } else if (throttle !== 0) {
         const accel = throttle > 0 ? MOVE_ACCEL * accelScale : MOVE_ACCEL * 1.4;
         speed += throttle * accel * delta;
       } else {
@@ -372,10 +390,19 @@ function LoadedModel() {
       if (speed > maxForward) speed = maxForward;
       if (speed < -MAX_REVERSE) speed = -MAX_REVERSE;
 
+      // Drift mechanics: enhanced turning when braking + turning + moving forward
+      const isDrifting = brake && steer !== 0 && speed > 1;
       const speedFactor = Math.min(Math.abs(speed) / maxForward, 1);
+
       if (steer !== 0) {
         const steerDir = speed !== 0 ? Math.sign(speed) : Math.sign(throttle || 1);
-        const steerStrength = Math.max(speedFactor, throttle !== 0 ? 0.15 : 0);
+        let steerStrength = Math.max(speedFactor, throttle !== 0 ? 0.15 : 0);
+
+        // Increase turn rate during drift
+        if (isDrifting) {
+          steerStrength *= 1.8; // Boost turning during drift
+        }
+
         if (steerStrength > 0) {
           headingRef.current += steer * TURN_RATE * steerStrength * steerDir * delta;
         }
