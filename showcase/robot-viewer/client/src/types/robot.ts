@@ -33,6 +33,7 @@ export interface RobotState {
   showGround: boolean;
   groundY: number;
   cameraMode: 'third' | 'first';
+  tourActive: boolean;
 }
 
 export interface RobotActions {
@@ -48,4 +49,5 @@ export interface RobotActions {
   toggleGround: () => void;
   setGroundY: (y: number) => void;
   toggleCameraMode: () => void;
+  setTourActive: (active: boolean) => void;
 }

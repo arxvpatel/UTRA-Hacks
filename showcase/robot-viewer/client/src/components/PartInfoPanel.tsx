@@ -16,6 +16,7 @@ export default function PartInfoPanel() {
   const selectedPart = useRobotStore((s) => s.selectedPart);
   const highlightedParts = useRobotStore((s) => s.highlightedParts);
   const clearHighlights = useRobotStore((s) => s.clearHighlights);
+  const tourActive = useRobotStore((s) => s.tourActive);
 
   const [detail, setDetail] = useState<{ part: RobotPart; relatedParts: RobotPart[] } | null>(null);
 
@@ -29,6 +30,7 @@ export default function PartInfoPanel() {
       .catch(() => setDetail(null));
   }, [selectedPart]);
 
+  if (tourActive) return null;
   if (!selectedPart && highlightedParts.length === 0) return null;
 
   return (
