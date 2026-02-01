@@ -27,6 +27,10 @@ app.use('/api/parts', partsRoutes);
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), demoMode });
 });
+// Root /health for Railway and generic health checks
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), demoMode });
+});
 
 // Serve built client (single-server hosting). Check both dist/../public and cwd/public.
 const publicDirCandidates = [
@@ -52,8 +56,9 @@ if (publicDir) {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`\n  Robot Viewer Server running on http://localhost:${PORT}`);
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log(`\n  Robot Viewer Server running on http://${HOST}:${PORT}`);
   if (demoMode) {
     console.log('  ⚠ Running in DEMO MODE (missing API keys)');
     console.log('  Set ELEVENLABS_API_KEY and GEMINI_API_KEY in .env for full functionality\n');

@@ -220,6 +220,31 @@ Host the client on Vercel/Netlify/Cloudflare Pages and the API on Railway/Render
 
 **Order:** Deploy Railway first so you have the API URL, then set `VITE_API_URL` on Vercel to that URL and deploy. If you deploy Vercel first, add `VITE_API_URL` after Railway is live and trigger a redeploy.
 
+### Railway not starting? (what to check / paste)
+
+The server already uses `process.env.PORT`, binds to `0.0.0.0`, and has a build step. If Railway still fails:
+
+1. **Health check** (replace with your Railway URL):
+   ```bash
+   curl -i https://your-backend.up.railway.app/health
+   ```
+   You should get `200` and `{"status":"ok",...}`. Also try `/api/health`.
+
+2. **Local run** (from `server/`):
+   ```bash
+   npm install
+   npm run build
+   PORT=3000 npm start
+   ```
+   On Windows PowerShell: `$env:PORT=3000; npm start`
+
+3. **What to paste** if you need help:
+   - Last 20–50 lines of Railway **Deploy** or **Build** logs.
+   - Your `server/package.json` **scripts** section.
+   - The exact error from Railway logs or browser DevTools (Console / Network).
+
+**Quick checks in this repo:** `PORT` is read from env (default `3001`), `"start": "node dist/index.js"`, build runs `tsc` (via `prestart` or Railway build command). Required env vars have defaults (demo mode); set `CLIENT_URL` for CORS when using Vercel.
+
 ### Getting 404?
 
 - **404 on the main page (blank or “Client not built”)** — The server has no `server/public` folder. Run the full build so the client is copied: from `robot-viewer/`, run `cd server && npm run build:full`, then start the server.
@@ -233,5 +258,3 @@ Host the client on Vercel/Netlify/Cloudflare Pages and the API on Railway/Render
 - Zustand (state) + Tailwind CSS (styling)
 - **Google Gemini 2.5 Flash** (natural language understanding)
 - **ElevenLabs Scribe V2** (speech-to-text)
-
-a
