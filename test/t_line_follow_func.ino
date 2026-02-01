@@ -19,7 +19,7 @@
 */
 
 #include "color_sensor_func.h"
-#include "line_follow_func.h"
+#include "./line_follow_func.h"
 
 // ============ CHANGE THIS TO SET LINE COLOR ============
 #define TARGET_COLOR "BLACK"
@@ -27,14 +27,14 @@
 // ========================================================
 
 #define SERIAL_CHECK_INTERVAL 50  // ms between serial input checks
-bool running = false;
+bool running = true;
 unsigned long loopCount = 0;
 unsigned long lastStatusTime = 0;
 #define STATUS_INTERVAL 2000  // ms between automatic status prints
 
 void setup() {
   Serial.begin(9600);
-  delay(500);
+  delay(5000);
 
   Serial.println("\n========================================");
   Serial.println("   LINE FOLLOW TEST PROGRAM");
@@ -86,6 +86,11 @@ void loop() {
 
   if (running) {
     lineFollowFSM(TARGET_COLOR);
+    // motorMoveForward(LINE_FOLLOW_SPEED);
+    
+    // steerLeft(LINE_FOLLOW_SPEED);
+    // steerRight(LINE_FOLLOW_SPEED);
+
     loopCount++;
 
     // Print periodic status

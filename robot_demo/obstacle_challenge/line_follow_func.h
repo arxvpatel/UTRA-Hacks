@@ -1,4 +1,3 @@
-/* Line follow pins, speeds, states. */
 #ifndef LINE_FOLLOW_FUNC_H
 #define LINE_FOLLOW_FUNC_H
 
@@ -7,12 +6,12 @@
 #include <string.h>
 
 // ============ IR SENSOR PIN DEFINITIONS ============
-#define IR_LEFT_PIN  13  // Left IR sensor
-#define IR_RIGHT_PIN 1   // Right IR sensor
+#define IR_LEFT_PIN  19  // Left IR sensor
+#define IR_RIGHT_PIN A2   // Right IR sensor
 
 // ============ LINE FOLLOW CONFIGURATION ============
-#define LINE_FOLLOW_SPEED      150  // Forward speed (0-255)
-#define LINE_FOLLOW_TURN_SPEED 120  // Correction turn speed (0-255)
+#define LINE_FOLLOW_SPEED      110  // Forward speed (0-255)
+#define LINE_FOLLOW_TURN_SPEED 110  // Correction turn speed (0-255)
 #define CORRECTION_DELAY       50   // ms between corrections
 
 // ============ LINE FOLLOW STATES ============
@@ -34,9 +33,5 @@ void lineFollowFSM(const char* targetColor);
 // IR sensor reading
 bool irLeftDetected();
 bool irRightDetected();
-
-// Steering helpers (non-blocking, for continuous correction)
-void steerLeft(int speed);
-void steerRight(int speed);
 
 #endif  // LINE_FOLLOW_FUNC_H
