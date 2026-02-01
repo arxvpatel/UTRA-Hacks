@@ -98,4 +98,4 @@ Open **http://localhost:5173**. The app runs in demo mode without API keys; add 
 - Express + Node.js
 - Zustand (state) + Tailwind CSS (styling)
 - **Google Gemini 2.5 Flash** (natural language understanding)
-- **ElevenLabs Scribe V2** (speech-to-text)
+- **ElevenLabs Scribe V2** (speech-to-text).
