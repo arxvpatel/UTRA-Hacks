@@ -201,8 +201,7 @@ Host the client on Vercel/Netlify/Cloudflare Pages and the API on Railway/Render
 - Railway sets `PORT` automatically; no need to add it.
 - **Variables** (in Railway project → Variables):
   - `CLIENT_URL` = your Vercel URL **without** trailing slash, e.g. `https://your-app.vercel.app`  
-    For preview deployments (e.g. branch deploys), add those URLs as a comma-separated list:  
-    `https://your-app.vercel.app,https://your-app-git-branch-xxx.vercel.app`
+    The server also allows **any** origin ending with `.vercel.app` (so preview URLs work without updating this).
   - Optional: `ELEVENLABS_API_KEY`, `GEMINI_API_KEY`
 - **Build command:** `npm install && npm run build`
 - **Start command:** `npm start`
@@ -219,6 +218,8 @@ Host the client on Vercel/Netlify/Cloudflare Pages and the API on Railway/Render
 - Deploy. Your app will be at `https://your-project.vercel.app` and will call the Railway API.
 
 **Order:** Deploy Railway first so you have the API URL, then set `VITE_API_URL` on Vercel to that URL and deploy. If you deploy Vercel first, add `VITE_API_URL` after Railway is live and trigger a redeploy.
+
+**API works on `/health` but frontend still gets 404?** The frontend is calling your Vercel URL (e.g. `https://your-app.vercel.app/api/...`) instead of Railway. Set **`VITE_API_URL`** in Vercel to your Railway URL **including `/api`**, e.g. `https://your-backend.up.railway.app/api`, then **redeploy** the Vercel project so the client is rebuilt with that value. (Vite bakes env vars in at build time.)
 
 ### Railway not starting? (what to check / paste)
 

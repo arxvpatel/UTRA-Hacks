@@ -13,13 +13,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
 // Comma-separated for multiple origins (e.g. Vercel production + preview URLs)
-const allowedOrigins = process.env.CLIENT_URL
+const allowedOriginsList = process.env.CLIENT_URL
   ? process.env.CLIENT_URL.split(',').map((s) => s.trim()).filter(Boolean)
   : ['http://localhost:5173'];
 
 const demoMode = !process.env.ELEVENLABS_API_KEY || !process.env.GEMINI_API_KEY;
 
-app.use(cors({ origin: allowedOrigins }));
+// Allow exact matches from CLIENT_URL, or any origin ending with .vercel.app (preview URLs)
+function corsOrigin(origin: string | undefined, cb: (err: Error | null, allow?: boolean | string) => void) {
+  if (!origin) return cb(null, true); // same-origin or non-browser
+  if (allowedOriginsList.includes(origin)) return cb(null, true);
+  if (origin.endsWith('.vercel.app')) return cb(null, true);
+  cb(null, false);
+}
+app.use(cors({ origin: corsOrigin }));
 app.use(express.json());
 
 app.use('/api/voice', voiceRoutes);
