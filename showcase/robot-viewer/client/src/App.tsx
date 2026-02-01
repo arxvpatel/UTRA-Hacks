@@ -2,6 +2,7 @@ import RobotViewer from './components/RobotViewer';
 import ControlPanel from './components/ControlPanel';
 import PartInfoPanel from './components/PartInfoPanel';
 import VoiceControl from './components/VoiceControl';
+import TourGuide from './components/TourGuide';
 import { useRobotStore } from './hooks/useRobotModel';
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
       <ControlPanel />
       <PartInfoPanel />
       <VoiceControl />
+      <TourGuide />
 
       <button
         onClick={toggleCameraMode}

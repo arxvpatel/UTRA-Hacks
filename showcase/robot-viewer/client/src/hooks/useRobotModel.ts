@@ -13,6 +13,7 @@ export const useRobotStore = create<RobotState & RobotActions>((set) => ({
   showGround: false,
   groundY: -0.15,
   cameraMode: 'third',
+  tourActive: false,
 
   highlightParts: (partIds: string[]) => set({ highlightedParts: partIds, error: null }),
   clearHighlights: () => set({ highlightedParts: [], selectedPart: null }),
@@ -27,4 +28,5 @@ export const useRobotStore = create<RobotState & RobotActions>((set) => ({
   setGroundY: (y: number) => set({ groundY: y }),
   toggleCameraMode: () =>
     set((state) => ({ cameraMode: state.cameraMode === 'third' ? 'first' : 'third' })),
+  setTourActive: (active: boolean) => set({ tourActive: active }),
 }));
