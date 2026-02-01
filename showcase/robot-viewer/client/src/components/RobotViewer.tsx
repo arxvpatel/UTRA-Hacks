@@ -330,7 +330,8 @@ function LoadedModel() {
     const axle = b.sub(a);
     if (axle.lengthSq() < 0.000001) return;
     axle.normalize();
-    const forward = new THREE.Vector3().crossVectors(UP_AXIS, axle).normalize();
+    // Swap cross product arguments to reverse forward direction
+    const forward = new THREE.Vector3().crossVectors(axle, UP_AXIS).normalize();
     if (forward.lengthSq() < 0.000001) return;
     baseForwardRef.current.copy(forward);
   }, [wheelEntries, scene]);
