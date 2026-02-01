@@ -48,7 +48,7 @@
 				-0.0656166,					0.0143402,					-0.0150598,					1
 			]
 			,"mesh": 1
-			,"name": "Infrared Sensor-2"		}
+			,"name": "sensor-1"		}
 ,
 		{
 			"matrix": [
@@ -58,7 +58,7 @@
 				-0.127405,					0.0409642,					-0.0294214,					1
 			]
 			,"mesh": 2
-			,"name": "HCSR04 Ultrasonic Sensor-1"		}
+			,"name": "ultrasonic-sensor-1"		}
 ,
 		{
 			"matrix": [
@@ -88,7 +88,7 @@
 				-0.191036,					0.0188074,					-0.0155293,					1
 			]
 			,"mesh": 5
-			,"name": "Infrared Sensor-1"		}
+			,"name": "sensor-2"		}
 ,
 		{
 			"matrix": [
@@ -98,7 +98,7 @@
 				-0.0877883,					0.0166923,					-0.151051,					1
 			]
 			,"mesh": 6
-			,"name": "battery(9V)-2"		}
+			,"name": "battery-2"		}
 ,
 		{
 			"matrix": [
@@ -108,7 +108,7 @@
 				-0.127763,					0.0149803,					-0.181036,					1
 			]
 			,"mesh": 7
-			,"name": "battery(9V)-1"		}
+			,"name": "battery-1"		}
 ,
 		{
 			"matrix": [
@@ -118,7 +118,7 @@
 				-0.141754,					0.0193503,					-0.144251,					1
 			]
 			,"mesh": 8
-			,"name": "ARDUINO UNO R3-1"		}
+			,"name": "arduino-1"		}
 ,
 		{
 			"matrix": [
@@ -128,7 +128,7 @@
 				-0.106384,					0.0128012,					-0.165724,					1
 			]
 			,"mesh": 9
-			,"name": "L298N-1"		}
+			,"name": "motor-driver-1"		}
 ,
 		{
 			"matrix": [
@@ -138,7 +138,7 @@
 				-0.127613,					0.0262954,					-0.0733287,					1
 			]
 			,"mesh": 10
-			,"name": "Breadboard_400pin-1"		}
+			,"name": "breadboard-1"		}
 ,
 		{
 			"matrix": [
@@ -148,7 +148,7 @@
 				-0.127883,					0.0293115,					-0.0105349,					1
 			]
 			,"mesh": 11
-			,"name": "TCS230-TCS3200-1"		}
+			,"name": "color-sensor-1"		}
 	],
 	"cameras": [
 		{
@@ -5124,7 +5124,7 @@
 	"buffers" : [
 			{
 				"byteLength": 312380
-				,"uri" : "data.bin"
+				,"uri" : "data(v3).bin"
 			}
 	]
 }

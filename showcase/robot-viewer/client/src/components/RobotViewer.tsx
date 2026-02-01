@@ -6,7 +6,7 @@ import { useRobotStore } from '../hooks/useRobotModel';
 import { useUISounds } from '../hooks/useUISounds';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
-const MODEL_PATH = '/models/utra_robot.gltf';
+const MODEL_PATH = '/models/utra_robot(v3).gltf';
 
 const HIGHLIGHT_COLOR = new THREE.Color('#c026d3');
 const LERP_SPEED = 0.5;
