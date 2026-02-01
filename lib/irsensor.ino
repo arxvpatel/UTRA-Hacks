@@ -5,9 +5,9 @@
 */
 
 // GPIO pin configuration - adjust for your wiring
-const int IR_LEFT_PIN = 2;   // Left IR sensor digital out
+const int IR_LEFT_PIN = 13;   // Left IR sensor digital out
 const int IR_CENTER_PIN = 3; // Center IR sensor digital out
-const int IR_RIGHT_PIN = 4;  // Right IR sensor digital out
+const int IR_RIGHT_PIN = 1;  // Right IR sensor digital out
 
 // Set to true if your module logic is inverted (HIGH = obstacle, LOW = clear)
 const bool INVERTED_LOGIC = false;
