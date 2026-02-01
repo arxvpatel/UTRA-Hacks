@@ -1,10 +1,35 @@
 import type { RobotPart, PartCategory } from '../types/index.js';
 
-function categorizeByName(id: string): { category: PartCategory; keywords: string[] } {
-  if (id.startsWith('wheel-')) return { category: 'motion', keywords: ['wheel', 'drive', 'motion'] };
-  if (id.startsWith('plate-')) return { category: 'structure', keywords: ['plate', 'base', 'structure'] };
-  return { category: 'structure', keywords: ['part'] };
-}
+// Enhanced part metadata with relationships and functional descriptions
+const partMetadata: Record<string, {
+  category: PartCategory;
+  keywords: string[];
+  description: string;
+  relatedTo: string[];
+  functionalRole: string;
+}> = {
+  'wheel-1': {
+    category: 'motion',
+    keywords: ['wheel', 'drive', 'motion', 'movement', 'rotation', 'roll', 'locomotion', 'mobility'],
+    description: 'Front/right wheel - primary motion component for robot movement',
+    relatedTo: ['wheel-2', 'plate-1'],
+    functionalRole: 'Provides locomotion and movement when rotating'
+  },
+  'wheel-2': {
+    category: 'motion',
+    keywords: ['wheel', 'drive', 'motion', 'movement', 'rotation', 'roll', 'locomotion', 'mobility'],
+    description: 'Rear/left wheel - primary motion component for robot movement',
+    relatedTo: ['wheel-1', 'plate-1'],
+    functionalRole: 'Provides locomotion and movement when rotating'
+  },
+  'plate-1': {
+    category: 'structure',
+    keywords: ['plate', 'base', 'structure', 'chassis', 'frame', 'support', 'platform', 'foundation'],
+    description: 'Base plate - structural foundation that supports and connects all moving parts',
+    relatedTo: ['wheel-1', 'wheel-2'],
+    functionalRole: 'Supports wheels and provides structural foundation for movement'
+  }
+};
 
 function formatName(id: string): string {
   return id
@@ -22,13 +47,21 @@ const meshNames = [
 ];
 
 export const robotParts: RobotPart[] = meshNames.map((id) => {
-  const { category, keywords } = categorizeByName(id);
+  const metadata = partMetadata[id] || {
+    category: 'structure' as PartCategory,
+    keywords: ['part'],
+    description: `UTRA Robot part: ${formatName(id)}`,
+    relatedTo: [],
+    functionalRole: 'Unknown part'
+  };
   return {
     id,
     name: formatName(id),
-    description: `UTRA Robot part: ${formatName(id)}`,
-    keywords: [id, ...keywords],
-    category,
+    description: metadata.description,
+    keywords: [id, ...metadata.keywords],
+    category: metadata.category,
+    relatedTo: metadata.relatedTo,
+    functionalRole: metadata.functionalRole
   };
 });
 
@@ -48,7 +81,11 @@ export function getPartsListForAI(): string {
   return robotParts
     .map(
       (p) =>
-        `- ID: "${p.id}" | Name: ${p.name} | Description: ${p.description} | Keywords: ${p.keywords.join(', ')}`
+        `- ID: "${p.id}" | Name: ${p.name} | Category: ${p.category}
+  Description: ${p.description}
+  Function: ${p.functionalRole}
+  Related Parts: ${p.relatedTo?.join(', ') || 'none'}
+  Keywords: ${p.keywords.join(', ')}`
     )
-    .join('\n');
+    .join('\n\n');
 }

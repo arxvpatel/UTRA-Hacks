@@ -23,20 +23,35 @@ export async function identifyParts(query: string): Promise<GeminiResponse> {
 
   const model = ai.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-  const prompt = `You are a robot part identification assistant. Given a user query about a robot and a list of available robot parts, identify which parts are most relevant to the query.
+  const prompt = `You are a robot part identification assistant. Given a user query about a robot and a list of available robot parts with their relationships, identify which parts are relevant to the query.
 
 Available robot parts:
 ${getPartsListForAI()}
 
 User query: "${query}"
 
+IMPORTANT INSTRUCTIONS:
+
+RULE 1: If the user asks for a SPECIFIC PART by name/number (e.g., "show me wheel 1", "highlight wheel-2", "where is the plate"), return ONLY that specific part(s) they mentioned.
+
+RULE 2: If the user asks about FUNCTION, MOVEMENT, or SYSTEMS (e.g., "parts that move", "parts involved in locomotion", "what moves when the wheel turns"), return ALL functionally related parts including:
+- All parts directly involved in that function
+- All parts listed in the "Related Parts" field
+- Supporting structural components
+
+Examples:
+- "show me wheel one" → Return only wheel-1
+- "highlight the wheels" → Return wheel-1 and wheel-2 (both wheels, no plate)
+- "parts that move when the wheel" → Return wheel-1, wheel-2, AND plate-1 (complete system)
+- "show me wheel 1 and related parts" → Return wheel-1, wheel-2, and plate-1
+- "what parts are involved in movement" → Return wheel-1, wheel-2, and plate-1 (complete system)
+
 Respond with ONLY valid JSON (no markdown code fences). The format must be:
-{"partIds": ["id1", "id2"], "confidence": 0.85, "reasoning": "Brief explanation of why these parts match"}
+{"partIds": ["id1", "id2"], "confidence": 0.85, "reasoning": "Brief explanation"}
 
 Rules:
 - partIds must contain valid IDs from the list above
 - confidence is 0.0 to 1.0
-- Return 1-5 most relevant parts
 - If no parts match, return empty partIds with low confidence`;
 
   const result = await model.generateContent(prompt);

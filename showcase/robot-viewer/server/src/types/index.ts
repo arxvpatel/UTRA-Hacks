@@ -6,6 +6,8 @@ export interface RobotPart {
   description: string;
   keywords: string[];
   category: PartCategory;
+  relatedTo?: string[];
+  functionalRole?: string;
 }
 
 export interface GeminiResponse {
