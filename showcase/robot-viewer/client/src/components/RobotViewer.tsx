@@ -1,5 +1,5 @@
 /** 3D robot: click parts, orbit, drive, highlights/explode. */
-import { Suspense, useRef, useMemo, useEffect } from 'react';
+import { Suspense, useRef, useMemo, useEffect, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, Grid, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -96,6 +96,28 @@ function LoadedModel() {
   });
   const smokeGeometryRef = useRef<THREE.BufferGeometry>(null);
   const smokeMaterialRef = useRef<THREE.PointsMaterial>(null);
+
+  // Clear smoke after swap to normal view
+  const resetSmoke = useCallback(() => {
+    const smoke = smokeDataRef.current;
+    for (let i = 0; i < SMOKE_MAX; i++) {
+      const base = i * 3;
+      smoke.positions[base] = 0;
+      smoke.positions[base + 1] = -999;
+      smoke.positions[base + 2] = 0;
+      smoke.colors[base] = 0;
+      smoke.colors[base + 1] = 0;
+      smoke.colors[base + 2] = 0;
+      smoke.life[i] = 0;
+    }
+    smoke.cursor = 0;
+
+    const geometry = smokeGeometryRef.current;
+    if (geometry) {
+      (geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
+      (geometry.getAttribute('color') as THREE.BufferAttribute).needsUpdate = true;
+    }
+  }, []);
 
   // Auto-center and scale
   const { scaleFactor, offset, groundY } = useMemo(() => {
@@ -249,18 +271,14 @@ function LoadedModel() {
   }, []);
 
   useEffect(() => {
-    const smoke = smokeDataRef.current;
-    for (let i = 0; i < SMOKE_MAX; i++) {
-      const base = i * 3;
-      smoke.positions[base] = 0;
-      smoke.positions[base + 1] = -999;
-      smoke.positions[base + 2] = 0;
-      smoke.colors[base] = 0;
-      smoke.colors[base + 1] = 0;
-      smoke.colors[base + 2] = 0;
-      smoke.life[i] = 0;
+    resetSmoke();
+  }, [resetSmoke]);
+
+  useEffect(() => {
+    if (!showGround) {
+      resetSmoke();
     }
-  }, []);
+  }, [showGround, resetSmoke]);
 
   // Compute the model-space center for explode directions
   const modelCenter = useMemo(() => {
@@ -491,9 +509,10 @@ function LoadedModel() {
     if (cameraMode === 'first' && groupRef.current) {
       const relativeHeading = headingRef.current - baseHeadingRef.current;
       const forward = baseForwardRef.current.clone().applyAxisAngle(UP_AXIS, relativeHeading);
-      const fpOffset = new THREE.Vector3(0, 0.22, -0.1).applyAxisAngle(UP_AXIS, relativeHeading);
+      const viewForward = forward.clone().multiplyScalar(-1);
+      const fpOffset = viewForward.clone().multiplyScalar(0.12).add(new THREE.Vector3(0, 0.22, 0));
       const desiredPos = groupRef.current.position.clone().add(fpOffset);
-      const targetPos = groupRef.current.position.clone().add(forward.multiplyScalar(1.2));
+      const targetPos = groupRef.current.position.clone().add(viewForward.multiplyScalar(1.2));
       const follow = 1 - Math.exp(-10 * delta);
 
       camera.position.lerp(desiredPos, follow);
