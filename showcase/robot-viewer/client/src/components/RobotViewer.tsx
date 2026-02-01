@@ -448,7 +448,9 @@ function LoadedModel() {
       // --- Explode: push non-highlighted parts outward, lerp back when no selection ---
       const targetOffset = new THREE.Vector3();
       if (hasHighlight && !isHighlighted) {
-        targetOffset.copy(explodeDir).multiplyScalar(explodeStrength);
+        const explodeWorld = explodeStrength / 100;
+        const explodeLocal = explodeWorld / (scaleFactor || 1);
+        targetOffset.copy(explodeDir).multiplyScalar(explodeLocal);
       }
 
       currentOffset.lerp(targetOffset, LERP_SPEED);

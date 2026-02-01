@@ -9,7 +9,7 @@ export const useRobotStore = create<RobotState & RobotActions>((set) => ({
   error: null,
   parts: [],
   apiStatus: null,
-  explodeStrength: 0.1,
+  explodeStrength: 25,
   showGround: false,
   groundY: -0.15,
   cameraMode: 'third',
