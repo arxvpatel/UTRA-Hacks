@@ -233,3 +233,5 @@ Host the client on Vercel/Netlify/Cloudflare Pages and the API on Railway/Render
 - Zustand (state) + Tailwind CSS (styling)
 - **Google Gemini 2.5 Flash** (natural language understanding)
 - **ElevenLabs Scribe V2** (speech-to-text)
+
+a
