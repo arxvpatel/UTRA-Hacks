@@ -1,4 +1,4 @@
-/* Low-level motor control. */
+#include "Arduino.h"
 #include "motor_func.h"
 
 // ============ MOTOR SETUP ============
@@ -125,6 +125,45 @@ void motorStop() {
   analogWrite(MOTOR_R_PWM, 0);
 
   Serial.println("[MOTOR] Stop");
+}
+
+// ============ STEERING HELPERS ============
+// Non-blocking continuous steering for line correction.
+// Different from motor_func's timed turns - these keep
+// steering until the FSM decides to stop.
+
+/**
+ * Steer robot left (stop left motor, keep right motor forward)
+ */
+void steerLeft(int speed) {
+  // Left motor stop
+  digitalWrite(MOTOR_L_IN1, LOW);
+  digitalWrite(MOTOR_L_IN2, HIGH);
+  analogWrite(MOTOR_L_PWM, speed);
+
+  // Right motor forward
+  digitalWrite(MOTOR_R_IN1, HIGH);
+  digitalWrite(MOTOR_R_IN2, LOW);
+  analogWrite(MOTOR_R_PWM, speed);
+
+  Serial.println("[Motor] Steering left!");
+}
+
+/**
+ * Steer robot right (keep left motor forward, stop right motor)
+ */
+void steerRight(int speed) {
+  // Left motor forward
+  digitalWrite(MOTOR_L_IN1, HIGH);
+  digitalWrite(MOTOR_L_IN2, LOW);
+  analogWrite(MOTOR_L_PWM, speed);
+
+  // Right motor stop
+  digitalWrite(MOTOR_R_IN1, LOW);
+  digitalWrite(MOTOR_R_IN2, HIGH);
+  analogWrite(MOTOR_R_PWM, speed);
+
+  Serial.println("[Motor] Steering right!");
 }
 
 // ============ HELPER TURN FUNCTIONS ============
