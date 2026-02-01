@@ -64,10 +64,18 @@ export default function SoundController() {
           sourceRef.current = null;
         }
 
-        // Generate new sound
-        const blob = await generateSound(selectedSound.id, 3);
-        const url = URL.createObjectURL(blob);
-        audioBlobUrlRef.current = url;
+        let url: string;
+
+        // Check if this is a custom recording with audioUrl
+        if (selectedSound.audioUrl) {
+          // Use the provided audio URL (custom recording)
+          url = selectedSound.audioUrl;
+        } else {
+          // Generate new sound via API
+          const blob = await generateSound(selectedSound.id, 3);
+          url = URL.createObjectURL(blob);
+          audioBlobUrlRef.current = url;
+        }
 
         // Create audio element
         const audio = new Audio(url);

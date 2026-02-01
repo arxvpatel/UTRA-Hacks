@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRobotStore } from '../hooks/useRobotModel';
 import { getAvailableSounds } from '../services/api';
+import CustomSoundRecorder from './CustomSoundRecorder';
 
 type TourStepPart = {
   id: string;
@@ -492,8 +493,13 @@ export default function RightSidebar() {
                 </div>
               </div>
 
+              {/* Custom Sound Recorder */}
+              <div>
+                <CustomSoundRecorder />
+              </div>
+
               {/* Status */}
-              <div className="text-center pt-1">
+              <div className="text-center">
                 {isLoadingSound ? (
                   <div className="flex items-center justify-center gap-2 text-[10px] text-blue-600">
                     <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
