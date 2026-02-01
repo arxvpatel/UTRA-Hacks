@@ -1,4 +1,3 @@
-/* Color sensor pins and thresholds. */
 #ifndef COLOR_SENSOR_FUNC_H
 #define COLOR_SENSOR_FUNC_H
 
@@ -14,7 +13,7 @@
 #define PIN_OUT 2
 
 // Threshold macros
-#define BLACK_THRESHOLD 200  // If all RGB values above this, color is black
+#define BLACK_THRESHOLD 125  // If all RGB values above this, color is black
 #define PULSE_TIMEOUT 25000  // Timeout for pulseIn (microseconds)
 
 // function prototypes

@@ -6,7 +6,7 @@
 
 // ============ ULTRASONIC SENSOR CONFIGURATION ============
 // HC-SR04 wired to analog pins (used as digital GPIO)
-#define US_TRIGGER_PIN A0   // Trigger (output)
+#define US_TRIGGER_PIN A3   // Trigger (output)
 #define US_ECHO_PIN    A1   // Echo (input)
 
 #define US_TIMEOUT 30000    // pulseIn timeout in microseconds (~5m max)
