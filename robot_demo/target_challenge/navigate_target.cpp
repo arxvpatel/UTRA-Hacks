@@ -9,7 +9,6 @@ Robot pathfinding algorithm to locate and stop at black box in center of target
 
 // ============ GLOBAL STATE VARIABLES ============
 NavigationState currentState = STATE_MOVE_RANDOM;
-int currentDirection = 0;  // 0=forward, 1=left, 2=right, 3=backward
 unsigned long startTime = 0;  // Start time for timing crossings
 unsigned long crossingTimeMs = 0;  // Time to cross the target
 unsigned long greenCrossingTimeMs = 0;  // Time to cross green zone
@@ -57,84 +56,6 @@ bool isRedZoneDetected() {
 }
 
 /**
- * Wait for a specific color to be detected with timeout
- */
-void waitForColorChange(const char* targetColor, unsigned long timeoutMs) {
-  unsigned long startTime = millis();
-  
-  while (millis() - startTime < timeoutMs) {
-    const char* currentColor = getCurrentColor();
-    
-    // Always check for black box - highest priority
-    if (isBlackBoxDetected()) {
-      Serial.println("[NAV] BLACK BOX DETECTED! Stopping.");
-      currentState = STATE_COMPLETE;
-      motorStop();
-      return;
-    }
-    
-    // Check for target color
-    if (strcmp(currentColor, targetColor) == 0) {
-      Serial.print("[NAV] Target color detected: ");
-      Serial.println(targetColor);
-      return;
-    }
-    
-    delay(COLOR_SENSE_DELAY);
-  }
-  
-  Serial.print("[NAV] Timeout waiting for color: ");
-  Serial.println(targetColor);
-}
-
-/**
- * Measure the time it takes to cross the target
- * Assumes robot is starting from blue zone, moving across
- */
-unsigned long measureCrossingTime() {
-  Serial.println("[NAV] Starting crossing measurement...");
-  motorMoveForward(MOTOR_SPEED);
-  
-  unsigned long startTime = millis();
-  bool firstBlueFound = false;
-  
-  while (true) {
-    // Check for black box first
-    if (isBlackBoxDetected()) {
-      Serial.println("[NAV] BLACK BOX DETECTED during crossing!");
-      currentState = STATE_COMPLETE;
-      motorStop();
-      return 0;
-    }
-    
-    // Look for blue zone transition
-    if (isBlueZoneDetected()) {
-      if (!firstBlueFound) {
-        // First blue is the starting zone, skip it
-        firstBlueFound = true;
-      } else {
-        // Second blue zone found - crossing complete
-        unsigned long elapsedTime = millis() - startTime;
-        Serial.print("[NAV] Crossing time: ");
-        Serial.print(elapsedTime);
-        Serial.println(" ms");
-        motorStop();
-        return elapsedTime;
-      }
-    }
-    
-    // Safety timeout
-    if (millis() - startTime > 30000) {
-      Serial.println("[NAV] Crossing timeout - target too large?");
-      motorStop();
-      return 0;
-    }
-    
-    delay(COLOR_SENSE_DELAY);
-  }
-}
-
-/**
  * Move forward for specified time
  */
 void moveForwardTime(unsigned long timeMs) {
@@ -149,7 +70,7 @@ void navigateTargetFSM() {
   
   switch (currentState) {
     
-    case STATE_MOVE_RANDOM:
+    case STATE_MOVE_RANDOM: {
       Serial.println("[NAV STATE] MOVE_RANDOM - Moving in starting direction");
       motorMoveForward(MOTOR_SPEED);
       
@@ -174,9 +95,9 @@ void navigateTargetFSM() {
         motorStop();
       }
 
-      break;
+      break; }
     
-    case STATE_FOUND_FIRST_BLUE:
+    case STATE_FOUND_FIRST_BLUE: {
       motorMoveForward(MOTOR_SPEED);
       
       if (isBlueZoneDetected()) {
@@ -200,9 +121,9 @@ void navigateTargetFSM() {
         motorStop();
       }
 
-      break;
+      break; }
     
-    case STATE_RETURN_HALF_TIME:
+    case STATE_RETURN_HALF_TIME: {
       Serial.println("[NAV STATE] RETURN_HALF_TIME - Moving back half distance");
       delay(200);
       turn180(MOTOR_TURN_SPEED, TURN_180_TIME);
@@ -221,9 +142,9 @@ void navigateTargetFSM() {
       }
       
       currentState = STATE_TURN_90_SEARCH;
-      break;
+      break; }
     
-    case STATE_TURN_90_SEARCH:
+    case STATE_TURN_90_SEARCH: {
       Serial.println("[NAV STATE] TURN_90_SEARCH - Turning 90 degrees");
       delay(200);
       turn90Left(MOTOR_TURN_SPEED, TURN_90_TIME);
@@ -256,18 +177,18 @@ void navigateTargetFSM() {
         motorStop();
         break;
       }
-      break;
+      break; }
 
-    case STATE_GREEN_ZONE:
+    case STATE_GREEN_ZONE: {
       Serial.println("[NAV STATE] GREEN_ZONE - Entering green circle mode");
       Serial.println("[NAV] Adapting algorithm to use RED boundaries");
 
       // Transition to green zone movement
       inGreenZone = true;
       currentState = STATE_GREEN_MOVE_RANDOM;
-      break;
+      break; }
 
-    case STATE_GREEN_MOVE_RANDOM:
+    case STATE_GREEN_MOVE_RANDOM: {
       Serial.println("[NAV STATE] GREEN_MOVE_RANDOM - Moving until RED boundary");
       motorMoveForward(MOTOR_SPEED);
 
@@ -284,9 +205,9 @@ void navigateTargetFSM() {
         currentState = STATE_COMPLETE;
         motorStop();
       }
-      break;
+      break; }
 
-    case STATE_GREEN_FOUND_FIRST_RED:
+    case STATE_GREEN_FOUND_FIRST_RED: {
       motorMoveForward(MOTOR_SPEED);
 
       if (isRedZoneDetected()) {
@@ -307,9 +228,9 @@ void navigateTargetFSM() {
         currentState = STATE_COMPLETE;
         motorStop();
       }
-      break;
+      break; }
 
-    case STATE_GREEN_RETURN_HALF:
+    case STATE_GREEN_RETURN_HALF: {
       Serial.println("[NAV STATE] GREEN_RETURN_HALF - Moving to center of green zone");
       delay(200);
       turn180(MOTOR_TURN_SPEED, TURN_180_TIME);
@@ -332,9 +253,9 @@ void navigateTargetFSM() {
       }
 
       currentState = STATE_GREEN_TURN_90;
-      break;
+      break; }
 
-    case STATE_GREEN_TURN_90:
+    case STATE_GREEN_TURN_90: {
       Serial.println("[NAV STATE] GREEN_TURN_90 - Turning perpendicular in green zone");
       delay(200);
       turn90Left(MOTOR_TURN_SPEED, TURN_90_TIME);
@@ -361,18 +282,18 @@ void navigateTargetFSM() {
         motorMoveForward(MOTOR_SPEED);
         // Continue searching in opposite direction
       }
-      break;
+      break; }
     
-    case STATE_COMPLETE:
+    case STATE_COMPLETE: {
       Serial.println("[NAV STATE] COMPLETE - Navigation finished!");
       motorStop();
       Serial.println("=== NAVIGATION TARGET CHALLENGE COMPLETE ===");
-      return;
+      return; }
     
-    default:
+    default: {
       Serial.println("[NAV] ERROR: Unknown state");
       motorStop();
       currentState = STATE_COMPLETE;
-      break;
+      break; }
     }
 }
