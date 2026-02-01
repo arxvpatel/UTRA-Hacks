@@ -235,8 +235,35 @@ function LoadedModel() {
     scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
-        const baseName = mesh.name || mesh.parent?.name;
-        if (!baseName) return;
+
+        // Traverse up the parent chain to find the first meaningful named ancestor
+        // Skip generic names like "mesh", "group", etc.
+        let baseName = '';
+        let parent: THREE.Object3D | null = mesh;
+
+        while (parent) {
+          const name = parent.name;
+          // Skip empty names and generic GLTF names
+          // Updated regex to handle multiple underscore-number sequences (e.g., mesh_8_1)
+          if (name &&
+              name !== 'Scene' &&
+              name !== 'UTRA Robot' &&
+              !name.match(/^mesh(_\d+)*$/i) &&
+              !name.match(/^group(_\d+)*$/i) &&
+              !name.match(/^object(_\d+)*$/i)) {
+            baseName = name;
+            break;
+          }
+          parent = parent.parent;
+        }
+
+        console.log('[Discovery] Found mesh, baseName:', baseName, ', mesh.name:', mesh.name, ', parent.name:', mesh.parent?.name);
+
+        // Skip meshes that don't have a meaningful name
+        if (!baseName) {
+          console.log('[Discovery] Skipping mesh with no meaningful baseName');
+          return;
+        }
 
         mesh.castShadow = true;
         mesh.receiveShadow = true;
@@ -245,6 +272,8 @@ function LoadedModel() {
         const count = partIdCounts.get(baseName) || 0;
         partIdCounts.set(baseName, count + 1);
         const partId = count > 0 ? `${baseName}_${count}` : baseName;
+
+        console.log('[Discovery] Assigned partId:', partId, 'to mesh');
 
         const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
         const isMaterialArray = Array.isArray(mesh.material);
@@ -301,7 +330,8 @@ function LoadedModel() {
     const axle = b.sub(a);
     if (axle.lengthSq() < 0.000001) return;
     axle.normalize();
-    const forward = new THREE.Vector3().crossVectors(UP_AXIS, axle).normalize();
+    // Swap cross product arguments to reverse forward direction
+    const forward = new THREE.Vector3().crossVectors(axle, UP_AXIS).normalize();
     if (forward.lengthSq() < 0.000001) return;
     baseForwardRef.current.copy(forward);
   }, [wheelEntries, scene]);
@@ -391,9 +421,26 @@ function LoadedModel() {
     const hasHighlight = highlightedParts.length > 0;
     const pulse = 0.6 + Math.sin(Date.now() * 0.004) * 0.2;
 
+    // Debug: Log once per frame when highlighting is active
+    if (hasHighlight && Date.now() % 1000 < 16) {
+      console.log('[Highlight] highlightedParts:', highlightedParts);
+    }
+
     for (const entry of meshEntries) {
       const { mesh, partId, originals, origPos, explodeDir, currentOffset } = entry;
-      const isHighlighted = highlightedParts.includes(partId);
+      // Extract base part ID from this mesh's partId (remove _0, _1, etc. suffixes)
+      const basePartIdForMesh = partId.replace(/_\d+$/, '');
+      // Match if the base part ID matches any highlighted part
+      const isHighlighted = highlightedParts.some(hp => {
+        const hpBase = hp.replace(/_\d+$/, '');
+        return basePartIdForMesh === hpBase;
+      });
+
+      // Debug: Log highlighting decisions for all parts once
+      if (hasHighlight && Date.now() % 2000 < 16) {
+        console.log(`[Highlight] partId: ${partId}, basePartId: ${basePartIdForMesh}, isHighlighted: ${isHighlighted}, highlightedParts:`, highlightedParts);
+      }
+
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
 
       // --- Material: highlight, translucent, or restore ---
@@ -406,7 +453,13 @@ function LoadedModel() {
           std.color.copy(HIGHLIGHT_COLOR);
           std.emissive.copy(HIGHLIGHT_COLOR);
           std.emissiveIntensity = pulse * 3;
-          std.map = null; // Remove texture to show color
+          // Remove all texture maps to show color
+          std.map = null;
+          std.normalMap = null;
+          std.roughnessMap = null;
+          std.metalnessMap = null;
+          std.aoMap = null;
+          std.emissiveMap = null;
           std.opacity = 1;
           std.transparent = false;
           std.depthWrite = true;
@@ -418,7 +471,13 @@ function LoadedModel() {
           std.color.copy(orig.color);
           std.emissive.set('#000000');
           std.emissiveIntensity = 0;
-          std.map = orig.map; // Restore texture
+          // Restore all texture maps
+          std.map = orig.map;
+          std.normalMap = orig.normalMap;
+          std.roughnessMap = orig.roughnessMap;
+          std.metalnessMap = orig.metalnessMap;
+          std.aoMap = orig.aoMap;
+          std.emissiveMap = orig.emissiveMap;
           std.opacity = 0.6;
           std.transparent = true;
           std.depthWrite = false;
@@ -431,6 +490,11 @@ function LoadedModel() {
           std.emissive.copy(orig.emissive);
           std.emissiveIntensity = orig.emissiveIntensity;
           std.map = orig.map;
+          std.normalMap = orig.normalMap;
+          std.roughnessMap = orig.roughnessMap;
+          std.metalnessMap = orig.metalnessMap;
+          std.aoMap = orig.aoMap;
+          std.emissiveMap = orig.emissiveMap;
           std.opacity = orig.opacity;
           std.transparent = orig.transparent;
           std.depthWrite = orig.depthWrite;
@@ -457,8 +521,9 @@ function LoadedModel() {
       mesh.position.copy(origPos).add(currentOffset);
 
       // --- Wheel spin: rotate wheel meshes based on speed ---
-      if (WHEEL_PART_IDS.includes(partId)) {
-        const direction = partId === 'wheel-2' ? 1 : -1;
+      const basePartId = partId.replace(/_\d+$/, '');
+      if (WHEEL_PART_IDS.includes(basePartId)) {
+        const direction = basePartId === 'wheel-2' ? 1 : -1;
         const spin = speed * WHEEL_SPIN_FACTOR * delta * spinDirection;
         // eslint-disable-next-line react-hooks/immutability -- imperative Three.js mutation in useFrame
         mesh.rotation.z += spin * direction;
@@ -528,9 +593,15 @@ function LoadedModel() {
   const handleClick = (e: { object: THREE.Object3D; stopPropagation: () => void }) => {
     e.stopPropagation();
     const partId = e.object.userData.partId as string | undefined;
+    console.log('[Click] Clicked mesh partId:', partId);
     if (partId) {
-      highlightParts([partId]);
-      selectPart(partId);
+      // Extract base part ID (remove _0, _1, etc. suffixes from multi-mesh components)
+      const basePartId = partId.replace(/_\d+$/, '');
+      console.log('[Click] Base partId:', basePartId);
+      console.log('[Click] Setting highlightedParts and selectedPart to:', basePartId);
+      // Always set both highlighted and selected to ensure sync
+      highlightParts([basePartId]);
+      selectPart(basePartId);
     }
   };
 
@@ -604,7 +675,10 @@ function FocusOnSelection() {
     scene.traverse((obj) => {
       if (!(obj as THREE.Mesh).isMesh) return;
       const partId = (obj.userData.partId as string | undefined) ?? obj.name;
-      if (partId === selectedPart) {
+      // Extract base part ID and match with selectedPart
+      const basePartId = partId.replace(/_\d+$/, '');
+      const selectedBase = selectedPart.replace(/_\d+$/, '');
+      if (basePartId === selectedBase) {
         targetObject = obj;
       }
     });

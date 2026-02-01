@@ -1,8 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { GeminiResponse } from '../types/index.js';
+import type { RobotPart } from '../types/index.js';
 import { getPartsListForAI, getAllPartIds, robotParts } from '../config/robotParts.js';
 
 let genAI: GoogleGenerativeAI | null = null;
+let warnedNoDescriptionKey = false;
 
 function getGenAI(): GoogleGenerativeAI | null {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -68,6 +70,57 @@ Rules:
   parsed.partIds = parsed.partIds.filter((id) => validIds.includes(id));
 
   return parsed;
+}
+
+function truncateAtWord(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  const slice = text.slice(0, maxLength);
+  const lastSpace = slice.lastIndexOf(' ');
+  if (lastSpace > 60) {
+    return slice.slice(0, lastSpace).trim();
+  }
+  return slice.trim();
+}
+
+function sanitizeDescription(text: string): string {
+  let cleaned = text.replace(/```[\s\S]*?```/g, '').trim();
+  cleaned = cleaned.replace(/^description\s*[:\-]\s*/i, '');
+  cleaned = cleaned.replace(/^(?:\d+\.\s+|-+\s+)/, '');
+  cleaned = cleaned.replace(/^[\s"'`]+|[\s"'`]+$/g, '');
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  return truncateAtWord(cleaned, 200);
+}
+
+export async function generatePartDescription(part: RobotPart): Promise<string | null> {
+  const ai = getGenAI();
+
+  if (!ai) {
+    if (!warnedNoDescriptionKey) {
+      console.log('[Gemini] No API key found, skipping description generation');
+      warnedNoDescriptionKey = true;
+    }
+    return null;
+  }
+
+  const model = ai.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+  const prompt = `You write concise UI descriptions for robot parts. Use the provided info and keep it factual.
+Write 1 short sentence (max 20 words). No quotes, no labels, no bullet points.
+
+Part info:
+- ID: ${part.id}
+- Name: ${part.name}
+- Category: ${part.category}
+- Keywords: ${part.keywords.join(', ') || 'none'}
+- Functional role: ${part.functionalRole || 'none'}
+- Related parts: ${part.relatedTo?.join(', ') || 'none'}
+
+Return ONLY the description text.`;
+
+  const result = await model.generateContent(prompt);
+  const text = result.response.text().trim();
+  const cleaned = sanitizeDescription(text);
+  return cleaned || null;
 }
 
 export function mockIdentifyParts(query: string): GeminiResponse {

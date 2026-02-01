@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
+    "build:full": "cd ../client && npm run build && cd ../server && node -e \"require('fs').cpSync('../client/dist', 'public', {recursive: true})\" && npm run build",
     "prestart": "npm run build",
     "start": "node dist/index.js"
   },

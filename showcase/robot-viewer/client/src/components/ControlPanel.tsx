@@ -135,16 +135,22 @@ export default function ControlPanel() {
                     highlightParts([part.id]);
                     selectPart(part.id);
                   }}
-                  className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-gray-100 transition-colors border-b border-gray-100 ${
+                  title={part.description}
+                  className={`w-full text-left px-3 py-2 flex items-start gap-2 hover:bg-gray-100 transition-colors border-b border-gray-100 ${
                     isActive ? 'bg-yellow-50' : ''
                   }`}
                 >
                   <span className={`text-[10px] px-1.5 py-0.5 rounded ${catBadgeColors[part.category]}`}>
                     {part.category}
                   </span>
-                  <span className={`text-sm ${isActive ? 'text-yellow-600 font-medium' : 'text-gray-700'}`}>
-                    {part.name}
-                  </span>
+                  <div className="flex flex-col min-w-0">
+                    <span className={`text-sm ${isActive ? 'text-yellow-600 font-medium' : 'text-gray-700'}`}>
+                      {part.name}
+                    </span>
+                    <span className="text-[10px] text-gray-400 leading-snug truncate w-full">
+                      {part.description}
+                    </span>
+                  </div>
                 </button>
               );
             })}

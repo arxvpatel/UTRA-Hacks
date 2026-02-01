@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useVoiceRecording } from '../hooks/useVoiceRecording';
 import { useRobotStore } from '../hooks/useRobotModel';
 import { processVoiceCommand, processTextQuery } from '../services/api';
