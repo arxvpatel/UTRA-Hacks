@@ -10,6 +10,10 @@ const MODEL_PATH = '/models/Buggy.gltf';
 const HIGHLIGHT_COLOR = new THREE.Color('#c026d3');
 const GREY_COLOR = new THREE.Color('#aaaaaa');
 const LERP_SPEED = 0.5;
+
+// Add wheel mesh IDs here — click a wheel in the viewer to find its partId
+const WHEEL_PART_IDS: string[] = ["body_113"];
+const WHEEL_SPIN_SPEED = 5; // radians per second
 // Deterministic fallback direction for meshes at the exact center
 function deterministicDir(index: number): THREE.Vector3 {
   const angle = (index + 1) * 2.399963; // golden angle
@@ -24,6 +28,7 @@ function LoadedModel() {
   const selectPart = useRobotStore((s) => s.selectPart);
   const highlightParts = useRobotStore((s) => s.highlightParts);
   const explodeStrength = useRobotStore((s) => s.explodeStrength);
+  const showGround = useRobotStore((s) => s.showGround);
   const setGroundY = useRobotStore((s) => s.setGroundY);
 
   // Auto-center and scale
@@ -90,8 +95,8 @@ function LoadedModel() {
     return entries;
   }, [scene, modelCenter]);
 
-  // Each frame: highlight selected part, grey out others, animate explode
-  useFrame(() => {
+  // Each frame: highlight selected part, grey out others, animate explode, spin wheels
+  useFrame((_, delta) => {
     const hasHighlight = highlightedParts.length > 0;
     const pulse = 0.6 + Math.sin(Date.now() * 0.004) * 0.2;
 
@@ -137,6 +142,12 @@ function LoadedModel() {
 
       currentOffset.lerp(targetOffset, LERP_SPEED);
       mesh.position.copy(origPos).add(currentOffset);
+
+      // --- Wheel spin: rotate wheel meshes when ground animation is active ---
+      if (showGround && WHEEL_PART_IDS.includes(partId)) {
+        // eslint-disable-next-line react-hooks/immutability -- imperative Three.js mutation in useFrame
+        mesh.rotation.x += WHEEL_SPIN_SPEED * delta;
+      }
     }
   });
 
@@ -166,9 +177,9 @@ function LoadedModel() {
 
 const LINE_COUNT = 30;
 const LINE_SPREAD = 10;
-const LINE_LENGTH = 0.4;
+const LINE_LENGTH = 2;
 const LINE_WIDTH = 0.1;
-const LINE_SPEED = 3;
+const LINE_SPEED = 10;
 const MOVE_DIRECTION = 90; // degrees — 0 = +X, 90 = +Z, etc.
 
 // Pre-compute random positions outside the component to satisfy React purity rules
