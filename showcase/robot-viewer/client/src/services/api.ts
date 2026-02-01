@@ -16,19 +16,19 @@ export async function processTextQuery(query: string): Promise<ProcessedVoiceRes
 }
 
 export async function getAllParts(): Promise<RobotPart[]> {
-  const { data } = await client.get('/parts');
+  const { data } = await client.get('/parts', { params: { ai: true } });
   return data.parts;
 }
 
 export async function getPartDetails(
   partId: string
 ): Promise<{ part: RobotPart; relatedParts: RobotPart[] }> {
-  const { data } = await client.get(`/parts/${partId}`);
+  const { data } = await client.get(`/parts/${partId}`, { params: { ai: true } });
   return data;
 }
 
 export async function searchParts(query: string): Promise<RobotPart[]> {
-  const { data } = await client.get('/parts/search', { params: { q: query } });
+  const { data } = await client.get('/parts/search', { params: { q: query, ai: true } });
   return data.parts;
 }
 
