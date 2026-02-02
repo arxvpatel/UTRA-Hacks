@@ -9,8 +9,6 @@
 - **robot_demo/** – Full robot challenges (line follow, obstacle, target).
 - **test/** – Test sketches for color sensor and line follow.
 
-Vercel hosted deployment: https://yellow-brownies.vercel.app/
-
 An interactive 3D robot model viewer where you can *speak* to explore. Ask "show me the brain" or "where's the wireless module?" and watch the model highlight the right parts. It's hands-free, intuitive, and built with a unique AI pipeline that turns speech into insight.
 
 ---
@@ -112,6 +110,8 @@ npm run dev
 ```
 
 Open **http://localhost:5173**. The app runs in demo mode without API keys; add `ELEVENLABS_API_KEY` and `GEMINI_API_KEY` to `server/.env` for full AI features.
+
+Vercel hosted deployment: https://yellow-brownies.vercel.app/
 
 ---
 
