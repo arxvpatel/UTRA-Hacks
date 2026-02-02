@@ -110,7 +110,6 @@ npm run dev
 ```
 
 Open **http://localhost:5173**. The app runs in demo mode without API keys; add `ELEVENLABS_API_KEY` and `GEMINI_API_KEY` to `server/.env` for full AI features.
-Vercel hosted deployment: https://yellow-brownies.vercel.app/
 ---
 
 ## Clean Code
